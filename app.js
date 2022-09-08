@@ -1,37 +1,37 @@
-// mengimport core modulu yang dibutuhkan
-const http = require('http');
-const fs = require('fs');
+// mengimport express
+const express = require('express');
+// memasukkan sebuah fungsi express ke variabel app
+const app = express();
 
-// membuat variabel untuk menyimpan port
+// menyimpan port
 const port = 3000;
 
-// membuat fungsi untuk merender file
-const renderFile = (path, res) => {
-  fs.readFile(path, (err, data) => {
-    if (err) {
-      res.writeHead(404);
-      res.write('Error : Page not found');
-    } else {
-      res.write(data);
-    }
-    res.end();
-  });
-};
+// membuat route /
+app.get('/', (req, res) => {
+  // memanggil file html
+  res.sendFile(__dirname + '/index.html');
+});
 
-// membuat web server
-http
-  .createServer((req, res) => {
-    // menangkat url
-    const url = req.url;
+// membuat route /about
+app.get('/about', (req, res) => {
+  res.sendFile(__dirname + '/about.html');
+});
 
-    if (url === '/about') {
-      renderFile('./about.html', res);
-    } else if (url === '/contact') {
-      renderFile('./contact.html', res);
-    } else {
-      renderFile('./index.html', res);
-    }
-  })
-  .listen(port, () => {
-    console.log(`Server is listening on port http://localhost:${port}`);
-  });
+// membuat route /contact
+app.get('/contact', (req, res) => {
+  res.sendFile(__dirname + '/contact.html');
+});
+
+// membuat middleware jika mengakses route selain route yang diatas maka page not found
+app.use('/', (req, res) => {
+  // menetapkan status code untuk page not found
+  res.status(404);
+  // mengirim pesan
+  res.send('Page not found : 404');
+});
+
+// menjalankan express di port 3000
+app.listen(port, () => {
+  // mengirim pesan jika server sudah siap digunakan
+  console.log(`Example app listening on port ${port}`);
+});
